@@ -1149,11 +1149,11 @@ function Altoholic:BuildBidsSubMenu()
 			} )
 			local i = 1
 			for CharacterName, c in pairs(r.char) do
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
                 local CharacterName = CharacterName
 				if table.getn(c.bids) > 0 then
 					CharacterName = CharacterName .. " " .. GREEN .. L["(has bids)"]
 				end
-                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_BIDS].subMenu[n].subMenu, {
 					name = CharacterName,
 					id = (n*100)+i,
