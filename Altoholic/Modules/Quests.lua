@@ -159,11 +159,8 @@ function Altoholic:QuestLink_OnEnter(self)
 end
 
 function Altoholic:UpdateQuestLog()
-	local q = self.db.account.data[V.faction][V.realm].char[UnitName("player")].questlog
-    if q[0] then
-        q[0] = {}
-        q[0] = nil
-    end
+	local q = {}
+    q[0] = nil
 	for i = GetNumQuestLogEntries(), 1, -1 do
 		local _, _, _, isHeader, isCollapsed = GetQuestLogTitle(i);
 		if isHeader and isCollapsed then
@@ -171,6 +168,7 @@ function Altoholic:UpdateQuestLog()
 		end
 	end
 	for i = 1, GetNumQuestLogEntries() do
+        q[i] = {}
 		local title, level, questTag, isHeader, _, isComplete = GetQuestLogTitle(i);
         local questDescription, questObjectives = GetQuestLogQuestText();
 		if not isHeader then
@@ -190,6 +188,7 @@ function Altoholic:UpdateQuestLog()
             q[i].isCollapsed = false
 		end
 	end
+    self.db.account.data[V.faction][V.realm].char[UnitName("player")].questlog = q
 end
 
 function Altoholic:SuggestGroupSize(tag, level)
