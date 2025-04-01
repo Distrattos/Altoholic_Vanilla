@@ -21,6 +21,7 @@ function Altoholic:Equipment_Update()
 	for CharacterName, c in pairs(self.db.account.data[V.CurrentFaction][V.CurrentRealm].char) do
 		local itemName = entry .. "1Item" .. i;
 		local itemButton = getglobal(itemName);
+        if itemButton == nil then break end
 		itemButton:SetScript("OnEnter", Altoholic_Equipment_OnEnter)
 		itemButton:SetScript("OnLeave", function(self) AltoTooltip:Hide() end)
 		itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)
@@ -51,6 +52,7 @@ function Altoholic:Equipment_Update()
 		for CharacterName, c in pairs(self.db.account.data[V.CurrentFaction][V.CurrentRealm].char) do
 			local itemName = entry.. i .. "Item" .. j;
 			local itemButton = getglobal(itemName);
+            if itemButton == nil then break end
 			itemButton:SetScript("OnEnter", Altoholic_Equipment_OnEnter)
 			itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)
 			local itemTexture = getglobal(itemName .. "IconTexture")

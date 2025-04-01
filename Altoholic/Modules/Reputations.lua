@@ -16,6 +16,8 @@ function Altoholic:Reputations_Update()
 	for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
 		local itemName = "AltoReputationsClassesItem" .. i;
 		local itemButton = getglobal(itemName);
+        -- max space for 10 characters, if we have more ignore the rest as it wont work anyway
+        if itemButton == nil then break end
 		itemButton:SetScript("OnEnter", Altoholic_Reputations_OnEnter)
 		itemButton:SetScript("OnLeave", function(self) AltoTooltip:Hide() end)
 		itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)
@@ -90,6 +92,7 @@ function Altoholic:Reputations_Update()
 				for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
 					local itemName = entry.. i .. "Item" .. j;
 					local itemButton = getglobal(itemName);
+                    if itemButton == nil then break end
 					itemButton:SetScript("OnEnter", Altoholic_Reputations_OnEnter)
 					itemButton:SetScript("OnClick", Altoholic_Reputations_OnClick)
 					if r[CharacterName] ~= nil then		-- if the current char has info for this faction ..

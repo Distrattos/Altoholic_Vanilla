@@ -9,7 +9,7 @@ function Altoholic:Recipes_Update()
 	local frame = "AltoRecipes"
 	local entry = frame.."Entry"
 	if c.recipes[V.CurrentProfession].ScanFailed then
-		getglobal("AltoholicFrame_Status"):SetText(L["No data: "] .. V.CurrentProfession .. L[" scan failed for "] ": |cFFFFD700" .. V.CurrentAlt .. " of ".. V.CurrentRealm)
+		getglobal("AltoholicFrame_Status"):SetText(L["No data: "] .. V.CurrentProfession .. L[" scan failed for "] .. ": |cFFFFD700" .. V.CurrentAlt .. " of ".. V.CurrentRealm)
 		getglobal("AltoholicFrame_Status"):Show()
 		self:ClearScrollFrame(getglobal(frame.."ScrollFrame"), entry, VisibleLines, 18)
 		return
@@ -162,6 +162,7 @@ function Altoholic:Recipes_OnEnter(self)
         itemLink = Altoholic:GetEnchantIDFromLink(tostring(enchantlink))
     else
         local item = c.recipes[V.CurrentProfession].list[id].id
+        if not item then item=16893 end
         _, itemLink = GetItemInfo(item)
     end
     if not itemLink then return end

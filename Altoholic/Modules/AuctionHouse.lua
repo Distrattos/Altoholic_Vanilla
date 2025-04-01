@@ -12,6 +12,9 @@ function Altoholic:Auctions_Update_Auctions()
 	local VisibleLines = 7
 	local frame = "AltoAuctions"
 	local entry = frame.."Entry"
+
+    local Scanner = CreateFrame("GameTooltip", "YssBossLoot_ScannerTooltip", nil, "GameTooltipTemplate")
+    Scanner:SetOwner(UIParent, "ANCHOR_NONE")
 	
 	if table.getn(c.auctions) == 0 then
 		getglobal("AltoholicFrame_Status"):SetText("|cFFFFD700" .. V.CurrentAlt .. " of ".. V.CurrentRealm .. " |cFFFFFFFF" .. L[" has no auctions"])
@@ -32,6 +35,14 @@ function Altoholic:Auctions_Update_Auctions()
 			local s = c.auctions[line]
 			
 			local itemName, _, itemRarity = GetItemInfo(s.id)
+            if itemRarity == nil then
+                itemRarity = 0
+                Scanner:SetHyperlink("item:"..s.id)
+            end
+            if itemName == nil then
+                itemName = "Unknown " .. s.id
+            end
+            -- DEFAULT_CHAT_FRAME:AddMessage(itemName .. ':' .. itemRarity)
             local _, _, _, itemQualityColor = GetItemQualityColor(itemRarity)
 			getglobal(entry..i.."Name"):SetText(itemQualityColor .. itemName)
 			

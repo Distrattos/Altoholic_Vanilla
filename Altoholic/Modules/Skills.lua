@@ -191,7 +191,8 @@ function Altoholic_Skill_OnEnter(self)
 			local expiresIn = reset - (time() - lastcheck)
 			
 			if expiresIn > 0 then
-				AltoTooltip:AddDoubleLine(select(2, GetItemInfo(itemID) ), Altoholic:GetTimeString(expiresIn));
+				-- AltoTooltip:AddDoubleLine(select(2, GetItemInfo(itemID) ), Altoholic:GetTimeString(expiresIn));
+				AltoTooltip:AddDoubleLine(GetItemInfo(itemID), Altoholic:GetTimeString(expiresIn));
 			end
 		end
 	end

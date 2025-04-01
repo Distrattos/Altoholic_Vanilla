@@ -886,24 +886,31 @@ end
 
 -- *** Menu Management ***
 function Altoholic:SelectAlt(id)
-	local realmID = floor(id / 100)
-	local charID = mod(id, 100)
-	local realmNum = 1
-	for FactionName, f in pairs(self.db.account.data) do
-		for RealmName, r in pairs(f) do
-			local charNum = 1
-			for CharacterName, c in pairs(r.char) do
-				if (charNum == charID) and (realmNum == realmID) then
-					V.CurrentFaction = FactionName
-					V.CurrentRealm = RealmName
-					V.CurrentAlt = CharacterName
-					return
-				end
-				charNum = charNum + 1
-			end
-			realmNum = realmNum + 1
-		end
-	end
+    local FactionName, RealmName, CharacterName = Altoholic:strsplit(":", id)
+    V.CurrentFaction = FactionName
+    V.CurrentRealm = RealmName
+    V.CurrentAlt = CharacterName
+
+    DEFAULT_CHAT_FRAME:AddMessage(FactionName .. ":" .. RealmName .. ":" .. CharacterName)
+
+--	local realmID = floor(id / 100)
+--	local charID = mod(id, 100)
+--	local realmNum = 1
+--	for FactionName, f in pairs(self.db.account.data) do
+--		for RealmName, r in pairs(f) do
+--			local charNum = 1
+--			for CharacterName, c in pairs(r.char) do
+--				if (charNum == charID) and (realmNum == realmID) then
+--					V.CurrentFaction = FactionName
+--					V.CurrentRealm = RealmName
+--					V.CurrentAlt = CharacterName
+--					return
+--				end
+--				charNum = charNum + 1
+--			end
+--			realmNum = realmNum + 1
+--		end
+--	end
 end
 
 function Altoholic:BuildContainersSubMenu()
@@ -922,7 +929,7 @@ function Altoholic:BuildContainersSubMenu()
 			} )
 			local i = 1
 			for CharacterName, c in pairs(r.char) do
-                local altID = (n*100)+i
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_CONTAINERS].subMenu[n].subMenu, {
 					name = CharacterName,
 					id = (n*100)+i,
@@ -958,7 +965,7 @@ function Altoholic:BuildMailSubMenu()
 				if table.getn(c.mail) >= 1 then
 					CharacterNameM = CharacterName .. " " .. GREEN .. L["(has mail)"]
 				end
-                local altID = (n*100)+i
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_MAIL].subMenu[n].subMenu, {
 					name = CharacterName,
                     hasmail = CharacterNameM,
@@ -980,7 +987,11 @@ function Altoholic:BuildEquipmentSubMenu()
 	local n = 1
 	for FactionName, f in pairs(self.db.account.data) do
 		for RealmName, r in pairs(f) do
-            local altID = (n*100)+1
+            local altID
+            for CharacterName, c in pairs(r.char) do
+                altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
+                break
+            end
 			table.insert(self.Menu[MENU_EQUIPMENT].subMenu, {
 				name = self:GetRealmString(FactionName, RealmName),
 				isCollapsed = true,
@@ -1011,7 +1022,7 @@ function Altoholic:BuildQuestsSubMenu()
 			} )
 			local i = 1
 			for CharacterName, c in pairs(r.char) do
-                local altID = (n*100)+i
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_QUESTS].subMenu[n].subMenu, {
 					name = CharacterName,
 					id = (n*100)+i,
@@ -1044,17 +1055,18 @@ function Altoholic:BuildRecipesSubMenu()
 			} )
 			local i = 1
 			for CharacterName, c in pairs(r.char) do
-                local altID = (n * 100) + i
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
+                local id = n*100 + i
 				table.insert(self.Menu[MENU_RECIPES].subMenu[n].subMenu, {
 					name = CharacterName,
 					isCollapsed = true,
-					id = (n * 100) + i,
+					id,
 					subMenu = {},
 					OnClick = function(self)
-						local id = altID
-						local realmID = floor(id / 100)
-						local charID = mod(id, 100)
-						--Altoholic:SelectAlt(id)
+						local lid = id
+						local realmID = floor(lid / 100)
+						local charID = mod(lid, 100)
+						--Altoholic:SelectAlt(altID)
 						Altoholic:Menu_Update(MENU_RECIPES, realmID, charID)
 					end
 				} )
@@ -1100,10 +1112,11 @@ function Altoholic:BuildAuctionsSubMenu()
 			local i = 1
 			for CharacterName, c in pairs(r.char) do
                 local CharacterName = CharacterName
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
                 if table.getn(c.auctions) >= 1 then
                     CharacterName = CharacterName .. " " .. GREEN .. L["(has auctions)"]
                 end
-                local altID = (n*100)+i
+                -- local altID = (n*100)+i
 				table.insert(self.Menu[MENU_AUCTIONS].subMenu[n].subMenu, {
 					name = CharacterName,
 					id = (n*100)+i,
@@ -1140,7 +1153,7 @@ function Altoholic:BuildBidsSubMenu()
 				if table.getn(c.bids) > 0 then
 					CharacterName = CharacterName .. " " .. GREEN .. L["(has bids)"]
 				end
-                local altID = (n*100)+i
+                local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_BIDS].subMenu[n].subMenu, {
 					name = CharacterName,
 					id = (n*100)+i,
@@ -1247,6 +1260,8 @@ function Altoholic:SelectProfession(id)
                 ProfessionLevel = Altoholic.db.account.data[V.CurrentFaction][V.CurrentRealm].char[V.CurrentAlt].skill[L["Rogue Proficiencies"]][V.CurrentProfession]
             end
             local rank, maxRank = Altoholic:strsplit("|", ProfessionLevel)
+            if rank == nil then rank = '0' end
+            if maxRank == nil then maxRank = '?' end
             V.CurrentProfessionLevel = Altoholic:GetSkillColor(tonumber(rank)) .. rank .. "/" .. maxRank
         end
     end
@@ -1569,7 +1584,9 @@ function Altoholic:GetSuggestion(index, level)
 end
 
 function Altoholic:GetSkillColor(rank)
-	if rank < 75 then
+	if rank == nil then
+        return WHITE
+    elseif rank < 75 then
 		return RED
 	elseif rank < 150 then
 		return ORANGE
