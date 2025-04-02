@@ -7,16 +7,34 @@ local TEAL		= "|cFF00FF9A"
 local YELLOW	= "|cFFFFFF00"
 local ORANGE	= "|cFFFF7F00"
 
+local function compareLevel(c1, c2)
+    local l1 = Altoholic.db.account.data[V.faction][V.realm].char[c1].level
+    local l2 = Altoholic.db.account.data[V.faction][V.realm].char[c2].level
+    if l1 == l2 then
+        return c1 < c2  -- alphabetically when same level
+    else
+        return l1 > l2  -- highest level first
+    end
+end
+
 function Altoholic:Reputations_Update()
 	local VisibleLines = 11
 	local frame = "AltoReputations"
 	local entry = frame.."Entry"
 	-- ** draw class icons **
 	local i = 1
+    local byLevel = {}
 	for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
+        table.insert(byLevel, CharacterName)
+    end
+    table.sort(byLevel, compareLevel)
+	-- for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
+    for _, CharacterName in byLevel do
+        -- DEFAULT_CHAT_FRAME:AddMessage("Handling "..CharacterName)
+        c = self.db.account.data[V.faction][V.realm].char[CharacterName]
 		local itemName = "AltoReputationsClassesItem" .. i;
 		local itemButton = getglobal(itemName);
-        -- max space for 10 characters, if we have more ignore the rest as it wont work anyway
+        -- getglobal has space for 10 characters, if we have more ignore the rest as it wont work anyway
         if itemButton == nil then break end
 		itemButton:SetScript("OnEnter", Altoholic_Reputations_OnEnter)
 		itemButton:SetScript("OnLeave", function(self) AltoTooltip:Hide() end)
@@ -89,7 +107,10 @@ function Altoholic:Reputations_Update()
 				getglobal(entry..i.."Name"):SetJustifyH("RIGHT")
 				getglobal(entry..i.."Name"):SetPoint("TOPLEFT", 15, 0)
 				local j = 1
-				for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
+				-- for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
+                for _, CharacterName in byLevel do
+                    -- DEFAULT_CHAT_FRAME:AddMessage("Handling "..CharacterName)
+                    c = self.db.account.data[V.faction][V.realm].char[CharacterName]
 					local itemName = entry.. i .. "Item" .. j;
 					local itemButton = getglobal(itemName);
                     if itemButton == nil then break end
