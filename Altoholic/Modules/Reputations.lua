@@ -7,15 +7,6 @@ local TEAL		= "|cFF00FF9A"
 local YELLOW	= "|cFFFFFF00"
 local ORANGE	= "|cFFFF7F00"
 
-local function compareLevel(c1, c2)
-    local l1 = Altoholic.db.account.data[V.faction][V.realm].char[c1].level
-    local l2 = Altoholic.db.account.data[V.faction][V.realm].char[c2].level
-    if l1 == l2 then
-        return c1 < c2  -- alphabetically when same level
-    else
-        return l1 > l2  -- highest level first
-    end
-end
 
 function Altoholic:Reputations_Update()
 	local VisibleLines = 11
@@ -23,19 +14,15 @@ function Altoholic:Reputations_Update()
 	local entry = frame.."Entry"
 	-- ** draw class icons **
 	local i = 1
-    local byLevel = {}
-	for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
-        table.insert(byLevel, CharacterName)
-    end
-    table.sort(byLevel, compareLevel)
 	-- for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
-    for _, CharacterName in byLevel do
-        -- DEFAULT_CHAT_FRAME:AddMessage("Handling "..CharacterName)
-        c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+	local byLevel = Altoholic:Get_Sorted_Character_List()
+	for _, CharacterName in byLevel do
+		-- DEFAULT_CHAT_FRAME:AddMessage("Handling "..CharacterName)
+		local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
 		local itemName = "AltoReputationsClassesItem" .. i;
 		local itemButton = getglobal(itemName);
-        -- getglobal has space for 10 characters, if we have more ignore the rest as it wont work anyway
-        if itemButton == nil then break end
+		-- Only buttons for 10 columns defined; so we stop when buttons stop being defined
+		if itemButton == nil then break end
 		itemButton:SetScript("OnEnter", Altoholic_Reputations_OnEnter)
 		itemButton:SetScript("OnLeave", function(self) AltoTooltip:Hide() end)
 		itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)

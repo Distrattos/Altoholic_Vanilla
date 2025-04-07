@@ -169,7 +169,9 @@ function Altoholic:SearchRealm()
 				V.SearchLocation = KEYRING
 			else
 				local bagNum = tonumber(string.sub(BagName, 4))
-				if (bagNum >= 0) and (bagNum <= 4) then
+				if bagNum == nil then 
+					DEFAULT_CHAT_FRAME:AddMessage("Encountered unknown bag "..BagName)
+				elseif (bagNum >= 0) and (bagNum <= 4) then
 					V.SearchLocation = L["Bags"]
 				else
 					V.SearchLocation = L["Bank"]
