@@ -18,11 +18,9 @@ function Altoholic:Equipment_Update()
 	local entry = frame.."Entry"
 	-- ** draw class icons **
 	local i = 1
-	V.faction = V.CurrentFaction
-	V.realm = V.CurrentRealm
-	local byLevel = Altoholic:Get_Sorted_Character_List()
+	local byLevel = Altoholic:Get_Sorted_Character_List(V.CurrentFaction, V.CurrentRealm)
 	for _, CharacterName in byLevel do
-		local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+		local c = self.db.account.data[V.CurrentFaction][V.CurrentRealm].char[CharacterName]
 		local itemName = entry .. "1Item" .. i;
 		local itemButton = getglobal(itemName);
 		if itemButton == nil then break end

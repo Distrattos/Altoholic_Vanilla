@@ -37,18 +37,19 @@ Altoholic.Menu = {
 			{ name = L["Characters"], OnClick = function() Altoholic:ActivateMenuItem("AltoSummary") end },
 			{ name = L["Bag Usage"], OnClick = function() Altoholic:ActivateMenuItem("AltoBags") end },
 			{ name = SKILLS, OnClick = function() Altoholic:ActivateMenuItem("AltoSkills") end },
-			{ name = L["Reputations"], OnClick = function() Altoholic:ActivateMenuItem("AltoReputations") end }
+			{ name = L["Reputations"], OnClick = function() Altoholic:ActivateMenuItem("AltoReputations") end },
+			{ name = "Raids", OnClick = function() Altoholic:ActivateMenuItem("AltoRaids") end }
 		},
 		OnClick = function() Altoholic:Menu_Update(MENU_SUMMARY) end
-    },
+	},
 	{	name = L["Containers"], isCollapsed = true,
 		subMenu = {},
 		OnClick = function() Altoholic:Menu_Update(MENU_CONTAINERS) end
-    },
+	},
 	{	name = L["E-Mail"], isCollapsed = true,
         subMenu = {},
 		OnClick = function() Altoholic:Menu_Update(MENU_MAIL) end
-    },
+	},
 	{	name = L["Search"], isCollapsed = true,
         subMenu = {
 			{ name = BI["Weapon"], isCollapsed = true,
@@ -73,7 +74,7 @@ Altoholic.Menu = {
 					{ name = L["Fishing Poles"], OnClick = function() Altoholic:SearchItem(BI["Weapon"], L["Fishing Poles"]) end }
 				},
 				OnClick = function() Altoholic:Menu_Update(MENU_SEARCH, 1 )	end
-            },
+			},
 			{ name = BI["Armor"], isCollapsed = true,
 				subMenu = {
 					{ name = L["Any"], OnClick = function() Altoholic:SearchItem(BI["Armor"]) end },
@@ -88,7 +89,7 @@ Altoholic.Menu = {
 					{ name = BI["Totems"], OnClick = function() Altoholic:SearchItem(BI["Armor"], BI["Totems"]) end }
 				},
 				OnClick = function() Altoholic:Menu_Update(MENU_SEARCH, 2 )	end
-            },
+			},
 			{ name = BI["Consumable"],	isCollapsed = true,
 				subMenu = {},
 				OnClick = function() Altoholic:SearchItem(BI["Consumable"])	end
@@ -332,6 +333,7 @@ function Altoholic:OnEnable()
 		getglobal(repFrame.."ClassesItem" .. j):SetPoint("BOTTOMRIGHT", repFrame.."ClassesItem" .. (j + 1), "BOTTOMLEFT", -5, 0);
 	end
 	self:CreateScrollLines("AltoSkills", "SkillsTemplate", 14);
+	self:CreateScrollLines("AltoRaids", "RaidsTemplate", 14);
 	self:CreateScrollLines("AltoQuests", "QuestEntryTemplate", 14);
 	self:CreateScrollLines("AltoRecipes", "RecipesEntryTemplate", 14);
 	self:CreateScrollLines("AltoAuctions", "AuctionEntryTemplate", 7);
@@ -430,11 +432,10 @@ function Altoholic:BuildCharacterInfoTable()
 				faction = FactionName,
 				realm = RealmName
 			} )
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				-- DEFAULT_CHAT_FRAME:AddMessage(ORANGE .. "Handling " .. CharacterName .. " on " .. RealmName .. " for " .. FactionName)
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 
 				V.Skills[1] = ""
 				V.Skills[2] = ""
@@ -914,11 +915,9 @@ function Altoholic:BuildContainersSubMenu()
 			} )
 			local i = 1
 
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 				local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_CONTAINERS].subMenu[n].subMenu, {
 					name = CharacterName,
@@ -951,11 +950,9 @@ function Altoholic:BuildMailSubMenu()
 				OnClick = function(self) Altoholic:Menu_Update(MENU_MAIL, realmsID)	end
 			} )
 			local i = 1
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 				if table.getn(c.mail) >= 1 then
 					CharacterNameM = CharacterName .. " " .. GREEN .. L["(has mail)"]
 				end
@@ -981,9 +978,7 @@ function Altoholic:BuildEquipmentSubMenu()
 	local n = 1
 	for FactionName, f in pairs(self.db.account.data) do
 		for RealmName, r in pairs(f) do
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			CharacterName = byLevel[1]
 			local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 			table.insert(self.Menu[MENU_EQUIPMENT].subMenu, {
@@ -1015,11 +1010,9 @@ function Altoholic:BuildQuestsSubMenu()
 				OnClick = function(self) Altoholic:Menu_Update(MENU_QUESTS, realmsID)	end
 			} )
 			local i = 1
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 				local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				table.insert(self.Menu[MENU_QUESTS].subMenu[n].subMenu, {
 					name = CharacterName,
@@ -1052,11 +1045,9 @@ function Altoholic:BuildRecipesSubMenu()
 				OnClick = function(self) Altoholic:Menu_Update(MENU_RECIPES, realmsID)	end
 			} )
 			local i = 1
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 				local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				local id = n*100 + i
 				table.insert(self.Menu[MENU_RECIPES].subMenu[n].subMenu, {
@@ -1112,11 +1103,9 @@ function Altoholic:BuildAuctionsSubMenu()
 				OnClick = function(self) Altoholic:Menu_Update(MENU_AUCTIONS, realmsID) end
 			} )
 			local i = 1
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 				local CharacterName = CharacterName
 				local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				if table.getn(c.auctions) >= 1 then
@@ -1153,11 +1142,9 @@ function Altoholic:BuildBidsSubMenu()
 				OnClick = function(self) Altoholic:Menu_Update(MENU_BIDS, realmsID) end
 			} )
 			local i = 1
-			V.faction = FactionName
-			V.realm = RealmName
-			local byLevel = Altoholic:Get_Sorted_Character_List()
+			local byLevel = Altoholic:Get_Sorted_Character_List(FactionName, RealmName)
 			for _, CharacterName in byLevel do
-				local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+				local c = self.db.account.data[FactionName][RealmName].char[CharacterName]
 				local altID = FactionName .. ":" .. RealmName .. ":" .. CharacterName
 				local CharacterName = CharacterName
 				if table.getn(c.bids) > 0 then
@@ -1385,6 +1372,11 @@ function Altoholic:GetQuestTypeString(tag, size)
 end
 
 function Altoholic:GetClassColor(class)
+	if class == nil or class == "" then 
+		DEFAULT_CHAT_FRAME:AddMessage(WHITE .. debugstack())
+		return WHITE 
+	end
+
 	return self.ClassInfo[self.Classes[class]].color
 end
 
@@ -1945,10 +1937,12 @@ function Altoholic:ProcessTooltip(tooltip, ttype, link, bagID, slotID)
 end
 
 Altoholic_sorted_character_list = nil
+Altoholic_compare_faction = nil
+Altoholic_compare_realm = nil
 
 local function compare_Character_By_Level(c1, c2)
-	local l1 = Altoholic.db.account.data[V.faction][V.realm].char[c1].level
-	local l2 = Altoholic.db.account.data[V.faction][V.realm].char[c2].level
+	local l1 = Altoholic.db.account.data[Altoholic_compare_faction][Altoholic_compare_realm].char[c1].level
+	local l2 = Altoholic.db.account.data[Altoholic_compare_faction][Altoholic_compare_realm].char[c2].level
 	if l1 == l2 then
 		return c1 < c2  -- alphabetically when same level
 	else
@@ -1956,10 +1950,12 @@ local function compare_Character_By_Level(c1, c2)
 	end
 end
 
-function Altoholic:Get_Sorted_Character_List()
+function Altoholic:Get_Sorted_Character_List(faction, realm)
 	Altoholic_sorted_character_list = {}
-	-- DEFAULT_CHAT_FRAME:AddMessage("getting list for "..V.faction.." on "..V.realm)
-	for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
+	Altoholic_compare_faction = faction
+	Altoholic_compare_realm = realm
+	-- DEFAULT_CHAT_FRAME:AddMessage(TEAL .. "getting list for "..faction.." on "..realm)
+	for CharacterName, c in pairs(self.db.account.data[faction][realm].char) do
 		table.insert(Altoholic_sorted_character_list, CharacterName)
 	end
 	table.sort(Altoholic_sorted_character_list, compare_Character_By_Level)

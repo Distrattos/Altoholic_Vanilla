@@ -15,7 +15,7 @@ function Altoholic:Reputations_Update()
 	-- ** draw class icons **
 	local i = 1
 	-- for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
-	local byLevel = Altoholic:Get_Sorted_Character_List()
+	local byLevel = Altoholic:Get_Sorted_Character_List(V.faction, V.realm)
 	for _, CharacterName in byLevel do
 		-- DEFAULT_CHAT_FRAME:AddMessage("Handling "..CharacterName)
 		local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
