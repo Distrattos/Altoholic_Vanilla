@@ -18,10 +18,14 @@ function Altoholic:Equipment_Update()
 	local entry = frame.."Entry"
 	-- ** draw class icons **
 	local i = 1
-	for CharacterName, c in pairs(self.db.account.data[V.CurrentFaction][V.CurrentRealm].char) do
+	V.faction = V.CurrentFaction
+	V.realm = V.CurrentRealm
+	local byLevel = Altoholic:Get_Sorted_Character_List()
+	for _, CharacterName in byLevel do
+		local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
 		local itemName = entry .. "1Item" .. i;
 		local itemButton = getglobal(itemName);
-        if itemButton == nil then break end
+		if itemButton == nil then break end
 		itemButton:SetScript("OnEnter", Altoholic_Equipment_OnEnter)
 		itemButton:SetScript("OnLeave", function(self) AltoTooltip:Hide() end)
 		itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)
@@ -49,10 +53,11 @@ function Altoholic:Equipment_Update()
 		local line = i + offset - 1
 		getglobal(entry..i.."Name"):SetText(self.equipment[line].color .. self.equipment[line].name)
 		local j = 1
-		for CharacterName, c in pairs(self.db.account.data[V.CurrentFaction][V.CurrentRealm].char) do
+		for _, CharacterName in byLevel do
+			local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
 			local itemName = entry.. i .. "Item" .. j;
 			local itemButton = getglobal(itemName);
-            if itemButton == nil then break end
+			if itemButton == nil then break end
 			itemButton:SetScript("OnEnter", Altoholic_Equipment_OnEnter)
 			itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)
 			local itemTexture = getglobal(itemName .. "IconTexture")
