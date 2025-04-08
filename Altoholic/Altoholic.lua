@@ -895,27 +895,6 @@ function Altoholic:SelectAlt(id)
     V.CurrentFaction = FactionName
     V.CurrentRealm = RealmName
     V.CurrentAlt = CharacterName
-
-    DEFAULT_CHAT_FRAME:AddMessage(FactionName .. ":" .. RealmName .. ":" .. CharacterName)
-
---	local realmID = floor(id / 100)
---	local charID = mod(id, 100)
---	local realmNum = 1
---	for FactionName, f in pairs(self.db.account.data) do
---		for RealmName, r in pairs(f) do
---			local charNum = 1
---			for CharacterName, c in pairs(r.char) do
---				if (charNum == charID) and (realmNum == realmID) then
---					V.CurrentFaction = FactionName
---					V.CurrentRealm = RealmName
---					V.CurrentAlt = CharacterName
---					return
---				end
---				charNum = charNum + 1
---			end
---			realmNum = realmNum + 1
---		end
---	end
 end
 
 function Altoholic:BuildContainersSubMenu()
@@ -1979,7 +1958,7 @@ end
 
 function Altoholic:Get_Sorted_Character_List()
 	Altoholic_sorted_character_list = {}
-	DEFAULT_CHAT_FRAME:AddMessage("getting list for "..V.faction.." on "..V.realm)
+	-- DEFAULT_CHAT_FRAME:AddMessage("getting list for "..V.faction.." on "..V.realm)
 	for CharacterName, c in pairs(self.db.account.data[V.faction][V.realm].char) do
 		table.insert(Altoholic_sorted_character_list, CharacterName)
 	end
