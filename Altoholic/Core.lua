@@ -271,31 +271,39 @@ Altoholic:RegisterDefaults('account', {
 -- Factions reference table, based on http://www.wowwiki.com/Factions
 -- a table with a similar structure (but only with required lines) will be build to make the reputations frame
 Altoholic.FactionsRefTable = {
+
 	{ FACTION_ALLIANCE },
 	BZ["Darnassus"],
 	L["Exodar"],
 	L["Gnomeregan Exiles"],
 	BZ["Ironforge"],
+	L["Silvermoon Remnant"],
 	L["Stormwind"],
+
 	{ FACTION_HORDE },
 	L["Darkspear Trolls"],
 	BZ["Orgrimmar"],
 	BZ["Thunder Bluff"],
 	BZ["Undercity"],
 	BZ["Silvermoon City"],
+	L["Durotar Labor Union"],
+
 	{ L["Alliance Forces"] },
 	BF["The League of Arathor"],
 	BF["Silverwing Sentinels"],
 	BF["Stormpike Guard"],
+
 	{ L["Horde Forces"] },
 	BF["The Defilers"],
 	BF["Warsong Outriders"],
 	BF["Frostwolf Clan"],
+
 	{ L["Steamwheedle Cartel"] },
 	BZ["Booty Bay"],
 	BZ["Everlook"],
 	BZ["Gadgetzan"],
 	BZ["Ratchet"],
+
 	{ BZ["Outland"] },
 	BF["Ashtongue Deathsworn"],
 	BF["Cenarion Expedition"],
@@ -307,6 +315,7 @@ Altoholic.FactionsRefTable = {
 	BF["Ogri'la"],
 	BF["Sporeggar"],
 	BF["Thrallmar"],
+
 	{ BZ["Shattrath City"] },
 	BF["Lower City"],
 	BF["Sha'tari Skyguard"],
@@ -314,6 +323,7 @@ Altoholic.FactionsRefTable = {
 	BF["The Aldor"],
 	BF["The Scryers"],
 	BF["The Sha'tar"],
+
 	{ L["Other"] },
 	BF["Argent Dawn"],
 	BF["Bloodsail Buccaneers"],
@@ -322,15 +332,19 @@ Altoholic.FactionsRefTable = {
 	BF["Darkmoon Faire"],
 	BF["Gelkis Clan Centaur"],
 	BF["Hydraxian Waterlords"],
+	L["Kul Tiras"],
 	BF["Keepers of Time"],
 	BF["Magram Clan Centaur"],
 	L["Ravenholdt"],
 	BF["The Scale of the Sands"],
 	L["Shen'dralar"],
 	L["Syndicate"],
+	L["Theramore"],
 	BF["Thorium Brotherhood"],
 	BF["Timbermaw Hold"],
 	BF["Tranquillien"],
+	L["Wardens of Time"],
+	L["Wildhammer Clan"],
 	BF["Wintersaber Trainers"],
 	BF["The Violet Eye"],
 	BF["Zandalar Tribe"]

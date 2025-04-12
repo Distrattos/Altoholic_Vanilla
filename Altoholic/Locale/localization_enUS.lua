@@ -61,15 +61,23 @@ L:RegisterTranslations("enUS", function() return {
 	--factions not in LibFactions or LibZone
 	["Exodar"] = true,
 	["Gnomeregan Exiles"] = true,
+	["Silvermoon Remnant"] = true,	-- twow
 	["Stormwind"] = true,
+
 	["Darkspear Trolls"] = true,
+	["Durotar Labor Union"] = true,	-- twow
+
 	["Alliance Forces"] = true,
 	["Horde Forces"] = true,
 	["Steamwheedle Cartel"] = true,
 	["Other"] = true,
+	["Kul Tiras"] = true,
 	["Ravenholdt"] = true,
 	["Shen'dralar"] = true,
 	["Syndicate"] = true,
+	["Theramore"] = true,
+	["Wardens of Time"] = true,
+	["Wildhammer Clan"] = true,
 	
 	-- menu
 	["Account Summary"] = true,
