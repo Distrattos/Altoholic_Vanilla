@@ -818,7 +818,7 @@ end
 
 function Altoholic:UpdateRaidTimers()
 	local c = self.db.account.data[V.faction][V.realm].char[V.player]
-    c.SavedInstance = {}
+	c.SavedInstance = {}
 	for i=1, GetNumSavedInstances() do
 		local instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i)
 		c.SavedInstance[instanceName] = instanceID .. "|" .. instanceReset .. "|" .. time()

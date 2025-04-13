@@ -180,30 +180,82 @@ end
 function Altoholic_Raid_OnEnter(self)
 	local line = self:GetParent():GetID()
 	local s = Altoholic.CharacterInfo[line]
-	if s.linetype ~= INFO_CHARACTER_LINE then		
+	-- DEFAULT_CHAT_FRAME:AddMessage("Onenter linetype "..s.linetype.."id"..self:GetID())
+	if s.linetype ~= INFO_CHARACTER_LINE and s.linetype ~= INFO_REALM_LINE then
+		-- DEFAULT_CHAT_FRAME:AddMessage("returning as linetype is "..s.linetype)
 		return
 	end
 	local id = self:GetID()
-	if id <= 0 or id >= 10 then return end
-	local Faction, Realm = Altoholic:GetCharacterInfo(line)
-	local c = Altoholic.db.account.data[Faction][Realm].char[s.name]
+	if id <= 0 or id > 10 then
+		-- DEFAULT_CHAT_FRAME:AddMessage("returning as ID is "..id)
+		return 
+	end
 
 	AltoTooltip:ClearLines();
 	AltoTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local longname = RaidLongNames[RaidNames[id]]
-	for name, info in pairs(c.SavedInstance) do
-		if (string.sub(name, 1, string.len(longname)) == longname) then
-			local id, reset, lastcheck = Altoholic:strsplit("|", info)
-			reset = tonumber(reset)
-			lastcheck = tonumber(lastcheck)
-			local expiresIn = reset - (time() - lastcheck)
 
-			AltoTooltip:AddLine(name, 1, 1, 1);
-			if (expiresIn > 0) then
-				AltoTooltip:AddLine("Expires in ".. RED .. Altoholic:GetTimeString(expiresIn))
+	if s.linetype == INFO_REALM_LINE then
+		-- DEFAULT_CHAT_FRAME:AddMessage(GREEN .. "In realm info")
+		local basetime, resetdays
+		if s.realm == "Nordanaar" then
+			-- There is no common base as Kara and Ony share 5 days
+			-- reset but Kara is 1 day later on Nordanaar
+			if id == 1 then		-- K10
+				basetime = 1663128000 - 86400
+				resetdays = 5
+			elseif id == 2 or id == 3 then -- AQ20 ZG
+				basetime = 1663128000 - 2 * 86400
+				resetdays = 3
+			elseif id == 5 then	-- ONY
+				basetime = 1663128000 - 2 * 86400
+				resetdays = 5
 			else
-				AltoTooltip:AddLine("Expired ".. GREEN .. Altoholic:GetTimeString(-expiresIn) .. WHITE .. " ago")
+				basetime = 1663128000
+				resetdays = 7
+			end
+		else				-- Tel'Abim
+			if id == 1 then		-- K10
+				basetime = 1663128000 + 2 * 86400
+				resetdays = 5
+			elseif id == 2 or id == 3 then -- AQ20 ZG
+				basetime = 1663128000 - 86400
+				resetdays = 3
+			elseif id == 5 then	-- ONY
+				basetime = 1663128000 + 2 * 86400
+				resetdays = 5
+			else
+				basetime = 1663128000 + 86400
+				resetdays = 7
+			end
+		end
+		local now = time()
+		local passedresets = math.floor((now - basetime) / (resetdays * 86400))
+		local lastreset = basetime + passedresets * resetdays * 86400
+		local nextreset = lastreset + resetdays * 86400
+		AltoTooltip:AddLine("Last reset: "..Altoholic:GetTimeString(now - lastreset) .. " ago")
+		AltoTooltip:AddLine("Next reset: in "..Altoholic:GetTimeString(nextreset - now))
+		local wallclockdate = date("%A, %H:%M", nextreset)
+		AltoTooltip:AddLine("Next reset date: " .. ORANGE .. wallclockdate)
+	end
+
+	if s.linetype == INFO_CHARACTER_LINE then
+		local Faction, Realm = Altoholic:GetCharacterInfo(line)
+		local c = Altoholic.db.account.data[Faction][Realm].char[s.name]
+		for name, info in pairs(c.SavedInstance) do
+			if (string.sub(name, 1, string.len(longname)) == longname) then
+				local id, reset, lastcheck = Altoholic:strsplit("|", info)
+				reset = tonumber(reset)
+				lastcheck = tonumber(lastcheck)
+				local expiresIn = reset - (time() - lastcheck)
+
+				AltoTooltip:AddLine(name, 1, 1, 1);
+				if (expiresIn > 0) then
+					AltoTooltip:AddLine("Expires in ".. RED .. Altoholic:GetTimeString(expiresIn))
+				else
+					AltoTooltip:AddLine("Expired ".. GREEN .. Altoholic:GetTimeString(-expiresIn) .. WHITE .. " ago")
+				end
 			end
 		end
 	end
