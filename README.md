@@ -1,4 +1,42 @@
 # Altoholic_Vanilla
+
+This is my version for Turtle WOW. See the original README below.
+
+
+This version fixes several bugs, improves some things, and adds a menu tab to show
+Raid lockouts and reset times.
+
+If you have several accounts, or cleared your WDB folder, a character might not know
+some of the items in the auction/bid lists, which lead to crashes. Now those items
+are shown as blank squares and requested from the server for future display.
+
+Character lists are sorted by character level backwards, then name. So your level 60's
+are always on top, and your level 1 bank characters are always on bottom.
+
+The new character sort order also fixes the problem that sometimes clicking on a character
+made a different character pop up (caused by LUA tables not preserving order).
+
+The quest log messed up after a while, making quests show as header lines.
+
+Reputations and Equipment are now limited to your 10 highest character; this was a problem
+if you had more than 10 characters when you had more than 1 account.
+
+Profession skills are shown with their first letter now, so "Jewelcrafting 300" shows as
+"J300", not 300, which makes it easier to find a skill.
+
+A new tab shows which characters have raid lockout IDs for which raid.
+This includes reset times which are shown when you hover over a raid name in the title,
+no more reason to tab out and use the (excellent!) turtle timers.
+
+Added several Turtle specific factions to the factions list.
+
+
+
+
+
+------------
+
+
 Altoholic for Vanilla WoW 1.12 - backported from version 2.4.015 originally written by Thaoky
 
 *Please Note:*
