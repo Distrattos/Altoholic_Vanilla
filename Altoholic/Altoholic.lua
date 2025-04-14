@@ -284,6 +284,7 @@ function Altoholic:OnEnable()
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED")
 	self:RegisterEvent("MAIL_SHOW")
 	self:RegisterEvent("MAIL_CLOSED")
+	self:RegisterEvent("UPDATE_INSTANCE_INFO")
 	self:RegisterEvent("AceEvent_FullyInitialized")
 	getglobal("AltoholicFrameName"):SetText("Altoholic |cFFFFFFFF"..V.version)
 	V.faction = UnitFactionGroup("player")
@@ -369,7 +370,6 @@ function Altoholic:OnEnable()
 end
 
 function Altoholic:OnDisable()
-	self:UpdateRaidTimers()
 	-- Refresh DB on exit
 	-- self:UpdatePlayerStats()
 	-- self:UpdatePlayerBags()
@@ -403,10 +403,6 @@ function Altoholic:OnShow()
 		V.ExpiredMail = nil
 	end
 	self:UpdatePlayerStats()
-	-- needed to move UpdateRaidTimers() away from UpdatePlayerStats().
-	-- The latter is called right after login, where the raid timers
-	-- aren't available yet, resulting in an empty timer list.
-	self:UpdateRaidTimers()
 	self:UpdatePlayerBags()
 	self:UpdateTalents()
 	SetPortraitTexture(AltoholicFramePortrait,"player");
@@ -566,6 +562,7 @@ function Altoholic:UpdatePlayerStats()
 	self:UpdatePlayerSpells()
 	self:UpdatePlayerInventory()
 	self:UpdateEquipment()
+	self:UpdateRaidTimers()
 	self:PLAYER_MONEY()
 	-- *** Factions ***
 	for i = GetNumFactions(), 1, -1 do
@@ -821,6 +818,11 @@ function Altoholic:UpdatePlayerBank(scanBags)
 end
 
 function Altoholic:UpdateRaidTimers()
+	RequestRaidInfo()
+end
+
+-- called when RequestRaidInfo() has results
+function Altoholic:UPDATE_INSTANCE_INFO()
 	local c = self.db.account.data[V.faction][V.realm].char[V.player]
 	-- DEFAULT_CHAT_FRAME:AddMessage(ORANGE .. "Update timers, there are "..GetNumSavedInstances())
 	c.SavedInstance = {}
@@ -850,7 +852,7 @@ function Altoholic:Menu_Update(MenuLevel1, MenuLevel2, MenuLevel3)
 			m.isCollapsed = true
 		end
 	end
-    self.MenuCache = {}
+	self.MenuCache = {}
 	for _, L0 in pairs (self.Menu) do
 		table.insert(self.MenuCache, { linetype=1, name=L0.name, OnClick=L0.OnClick } )
 		if L0.isCollapsed == false then
@@ -897,10 +899,10 @@ end
 
 -- *** Menu Management ***
 function Altoholic:SelectAlt(id)
-    local FactionName, RealmName, CharacterName = Altoholic:strsplit(":", id)
-    V.CurrentFaction = FactionName
-    V.CurrentRealm = RealmName
-    V.CurrentAlt = CharacterName
+	local FactionName, RealmName, CharacterName = Altoholic:strsplit(":", id)
+	V.CurrentFaction = FactionName
+	V.CurrentRealm = RealmName
+	V.CurrentAlt = CharacterName
 end
 
 function Altoholic:BuildContainersSubMenu()
