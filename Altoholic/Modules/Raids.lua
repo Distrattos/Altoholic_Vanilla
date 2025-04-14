@@ -64,10 +64,6 @@ end
 
 -- check where the raid is in our table if at all
 local function getraidid(instancelist, raidabbrev)
-	-- for name, info in pairs(instancelist) do
-		-- DEFAULT_CHAT_FRAME:AddMessage(WHITE .. "look for " .. name  .. " info " .. info)
-	-- end
-
 	for name, info in pairs(instancelist) do
 		local longname = RaidLongNames[raidabbrev]
 		if (string.sub(name, 1, string.len(longname)) == longname) then

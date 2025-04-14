@@ -369,7 +369,8 @@ function Altoholic:OnEnable()
 end
 
 function Altoholic:OnDisable()
-    -- Refresh DB on exit
+	self:UpdateRaidTimers()
+	-- Refresh DB on exit
 	-- self:UpdatePlayerStats()
 	-- self:UpdatePlayerBags()
 end
@@ -402,6 +403,10 @@ function Altoholic:OnShow()
 		V.ExpiredMail = nil
 	end
 	self:UpdatePlayerStats()
+	-- needed to move UpdateRaidTimers() away from UpdatePlayerStats().
+	-- The latter is called right after login, where the raid timers
+	-- aren't available yet, resulting in an empty timer list.
+	self:UpdateRaidTimers()
 	self:UpdatePlayerBags()
 	self:UpdateTalents()
 	SetPortraitTexture(AltoholicFramePortrait,"player");
@@ -558,8 +563,8 @@ function Altoholic:UpdatePlayerStats()
 	local c = r.char[V.player]
 	self:PLAYER_XP_UPDATE()
 	self:UpdatePlayerSkills()
-    self:UpdatePlayerSpells()
-    self:UpdatePlayerInventory()
+	self:UpdatePlayerSpells()
+	self:UpdatePlayerInventory()
 	self:UpdateEquipment()
 	self:PLAYER_MONEY()
 	-- *** Factions ***
@@ -576,7 +581,6 @@ function Altoholic:UpdatePlayerStats()
 		end
 	end
 	self:UpdateQuestLog()
-	self:UpdateRaidTimers()
 	self:UpdatePVPStats()
 end
 
@@ -818,6 +822,7 @@ end
 
 function Altoholic:UpdateRaidTimers()
 	local c = self.db.account.data[V.faction][V.realm].char[V.player]
+	-- DEFAULT_CHAT_FRAME:AddMessage(ORANGE .. "Update timers, there are "..GetNumSavedInstances())
 	c.SavedInstance = {}
 	for i=1, GetNumSavedInstances() do
 		local instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i)
@@ -1987,9 +1992,9 @@ function Altoholic:AceEvent_FullyInitialized()
 	c.class = UnitClass("player")
 	self:UpdatePlayerStats()
 	self:UpdateTalents()
-    self:UpdatePlayerBags()
+	self:UpdatePlayerBags()
 	self:BuildUnsafeItemList()
-    self:HookTooltip()
+	self:HookTooltip()
 end
 
 function Altoholic:PLAYER_LEVEL_UP(newLevel)
