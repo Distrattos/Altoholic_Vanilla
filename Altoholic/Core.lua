@@ -60,7 +60,8 @@ Altoholic.Categories = {
 	"AltoRecipes",
 	"AltoAuctions",
 	"AltoSkills",
-	"AltoRaids"
+	"AltoRaids",
+	"AltoAttunements",
 }
 
 Altoholic.RecipesBooks = {

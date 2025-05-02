@@ -38,7 +38,8 @@ Altoholic.Menu = {
 			{ name = L["Bag Usage"], OnClick = function() Altoholic:ActivateMenuItem("AltoBags") end },
 			{ name = SKILLS, OnClick = function() Altoholic:ActivateMenuItem("AltoSkills") end },
 			{ name = L["Reputations"], OnClick = function() Altoholic:ActivateMenuItem("AltoReputations") end },
-			{ name = "Raids", OnClick = function() Altoholic:ActivateMenuItem("AltoRaids") end }
+			{ name = "Raids", OnClick = function() Altoholic:ActivateMenuItem("AltoRaids") end },
+			{ name = "Attunements", OnClick = function() Altoholic:ActivateMenuItem("AltoAttunements") end }
 		},
 		OnClick = function() Altoholic:Menu_Update(MENU_SUMMARY) end
 	},
@@ -285,6 +286,7 @@ function Altoholic:OnEnable()
 	self:RegisterEvent("MAIL_SHOW")
 	self:RegisterEvent("MAIL_CLOSED")
 	self:RegisterEvent("UPDATE_INSTANCE_INFO")
+	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("AceEvent_FullyInitialized")
 	getglobal("AltoholicFrameName"):SetText("Altoholic |cFFFFFFFF"..V.version)
 	V.faction = UnitFactionGroup("player")
@@ -332,6 +334,24 @@ function Altoholic:OnEnable()
 	getglobal(repFrame.."ClassesItem10"):SetPoint("BOTTOMRIGHT", repFrame .. "Classes", "BOTTOMRIGHT", -15, 0);
 	for j=9, 1, -1 do
 		getglobal(repFrame.."ClassesItem" .. j):SetPoint("BOTTOMRIGHT", repFrame.."ClassesItem" .. (j + 1), "BOTTOMLEFT", -5, 0);
+	end
+	-- and the same for Attunements
+	local attFrame = "AltoAttunements"
+	f = CreateFrame("Button", attFrame .. "Entry" .. 1, getglobal(attFrame), "AttunementEntryTemplate")
+	f:SetPoint("TOPLEFT", attFrame .. "ScrollFrame", "TOPLEFT", 0, -45)
+	for i = 2, 11 do
+		f = CreateFrame("Button", attFrame .. "Entry" .. i, getglobal(attFrame), "AttunementEntryTemplate")
+		f:SetPoint("TOPLEFT", attFrame .. "Entry" .. (i-1), "BOTTOMLEFT", 0, 0)
+	end
+	for i=1, 11 do
+		getglobal(attFrame.."Entry"..i.."Item10"):SetPoint("BOTTOMRIGHT", attFrame .. "Entry"..i, "BOTTOMRIGHT", -15, 0);
+		for j=9, 1, -1 do
+			getglobal(attFrame.."Entry"..i.."Item" .. j):SetPoint("BOTTOMRIGHT", attFrame.."Entry"..i.."Item" .. (j + 1), "BOTTOMLEFT", -5, 0);
+		end
+	end
+	getglobal(attFrame.."ClassesItem10"):SetPoint("BOTTOMRIGHT", attFrame .. "Classes", "BOTTOMRIGHT", -15, 0);
+	for j=9, 1, -1 do
+		getglobal(attFrame.."ClassesItem" .. j):SetPoint("BOTTOMRIGHT", attFrame.."ClassesItem" .. (j + 1), "BOTTOMLEFT", -5, 0);
 	end
 	self:CreateScrollLines("AltoSkills", "SkillsTemplate", 14);
 	self:CreateScrollLines("AltoRaids", "RaidsTemplate", 14);
@@ -563,6 +583,7 @@ function Altoholic:UpdatePlayerStats()
 	self:UpdatePlayerInventory()
 	self:UpdateEquipment()
 	self:UpdateRaidTimers()
+	self:UpdateQuests()
 	self:PLAYER_MONEY()
 	-- *** Factions ***
 	for i = GetNumFactions(), 1, -1 do
@@ -821,6 +842,10 @@ function Altoholic:UpdateRaidTimers()
 	RequestRaidInfo()
 end
 
+function Altoholic:UpdateQuests()
+	SendChatMessage(".queststatus", "GUILD")
+end
+
 -- called when RequestRaidInfo() has results
 function Altoholic:UPDATE_INSTANCE_INFO()
 	local c = self.db.account.data[V.faction][V.realm].char[V.player]
@@ -829,6 +854,41 @@ function Altoholic:UPDATE_INSTANCE_INFO()
 	for i=1, GetNumSavedInstances() do
 		local instanceName, instanceID, instanceReset = GetSavedInstanceInfo(i)
 		c.SavedInstance[instanceName] = instanceID .. "|" .. instanceReset .. "|" .. time()
+	end
+end
+
+
+local function debugQuestsComplete(completedQuests) 
+	if completedQuests["7046"] then
+		DEFAULT_CHAT_FRAME:AddMessage("Scepter of Celebras completed")
+	else
+		DEFAULT_CHAT_FRAME:AddMessage("Scepter of Celebras incomplete")
+	end
+	if completedQuests["6502"] then
+		DEFAULT_CHAT_FRAME:AddMessage("Drakefire Amulet completed")
+	else
+		DEFAULT_CHAT_FRAME:AddMessage("Drakefire Amulet incomplete")
+	end
+end
+
+function Altoholic:QUEST_QUERY_COMPLETE() 
+	local completedQuests = GetQuestsCompleted()
+	debugQuestsComplete(completedQuests)
+end
+
+function Altoholic:CHAT_MSG_ADDON(a1, a2)
+	-- If we have many quests completed we'll get more than one chat line.
+	-- So only ever add to the quest list; can't uncomplete a Q anyway.
+	if a1 and a1 == "TWQUEST" then
+		-- DEFAULT_CHAT_FRAME:AddMessage(a1)
+		-- DEFAULT_CHAT_FRAME:AddMessage(ORANGE .. a2)
+		local c = self.db.account.data[V.faction][V.realm].char[V.player]
+		local completedQuests = c.CompletedQuests or {}
+		for qid in string.gmatch(a2, "[^ ]+") do
+			completedQuests[qid] = true
+		end
+		-- debugQuestsComplete(completedQuests)
+		c.CompletedQuests = completedQuests
 	end
 end
 
