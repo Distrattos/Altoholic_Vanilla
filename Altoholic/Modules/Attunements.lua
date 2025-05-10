@@ -14,6 +14,7 @@ local ORANGE	= "|cFFFF7F00"
 local attunements = {
 	{	id = "0",     name = "Dungeons", collapsed = false },
 	{   id = "7046",  name = "Maraudon Princess", item = "The Scepter of Celebras"   },
+	{   id = "5505", name = "Scholomance", item = "The Key to Scholomance" },
 	{   id = "40316", name = "Karazan Crypt (A)", item = "Karazan Crypt Key" },
 	{   id = "40309", name = "Karazan Crypt (H)", item = "Karazan Crypt Key" },
 
