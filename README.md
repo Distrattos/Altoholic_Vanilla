@@ -31,6 +31,95 @@ no more reason to tab out and use the (excellent!) turtle timers.
 Added several Turtle specific factions to the factions list.
 
 
+## Raid Module
+
+A new module shows the raid IDs for your characters and their expiration times.
+Hovering the mouse over a header shows the last reset and next reset times
+for that raid, it also shows the next reset date as day of the week. So it's easy
+for you to determine if you can go raid today when you need the ID for a
+guild raid on saturday.
+
+<img src="Screenshots/Raids.png" alt="Raids"/>
+
+## Attunements Module
+
+This module helps you to remember which of your character has dungeon keys,
+completed attunement quests, and turned in one-time items (Onyxia head,
+Hakkar heart etc.). It checks if you have done the corresponding quest, so it
+also answers the question "has this character that I haven't played in half a
+year done its BWL attunement or not?".
+
+For dungeons, it checks quests as well, like whether or not you have done the
+Scepter of Celebras quest for Maraudon or the Key to Scholomance. As the module
+can only check quests, it will not tell you about the scarlet key or the Dire
+Maul key.
+
+As I don't know much about the higher tier raid, I'm open to suggestions as to
+what other items/quests to include. A link to the corresponding quest on 
+database.turtle-wow.org would be great if you want an addition here.
+
+<img src="Screenshots/Attunements.png" alt="Attunements"/>
+
+## Supporting multiple accounts
+
+### Possible but difficult
+
+If you have several accounts and want to share Altoholic data between them,
+you must apply some windows tricks to make all accounts share the same data
+file. This isn't supported by WOW itself.
+
+It is going to become a bit technical here. I'll explain the process and what
+happens, but you need to have some technical knowledge and experience with
+using the command line. If you need more explanation than this, please don't
+ask me, ask a friend who knows more. **I won't answer questions regarding this**,
+but if you have suggestions on how to make this section more understandable,
+feel free to ping.
+
+### Behind the scenes
+
+If you have two accounts named Alice and Bob, and your WOW installation is in
+`C:\GAMES\Turtlewow`, then WOW stores all account data for Alice in
+`C:\Games\Turtlewow\WTF\Account\ALICE`, and all data for Bob in
+`C:\Games\Turtlewow\WTF\Account\BOB`. The accounts can't access each other's data.
+
+The full names of the data files would be, in this case,
+`C:\Games\Turtlewow\WTF\Account\ALICE\SavedVariables\Altoholic.lua`
+and `C:\Games\Turtlewow\WTF\Account\BOB\SavedVariables\Altoholic.lua`.
+Now, Windows has a feature called "symbolic link" which allows a file to point
+to a different one. You can make a file named `C:\Games\Turtlewow\Altoholic.lua`
+and tell Windows to actually access that file when one of the real ones gets
+accessed. This is making
+`C:\Games\Turtlewow\WTF\Account\ALICE\SavedVariables\Altoholic.lua` a symbolic
+link to `C:\Games\Turtlewow\Altoholic.lua`, and the same for the BOB file.
+
+When WOW saves variables, it renames the file to a `.bak` file unless the `.bak`
+already exists, so we need to make sure the `.bak` exists before creating the
+symlink, else the symlink will just be renamed.
+
+The included script "make-altoholic-links.ps" should do all the technical stuff.
+Start powershell as administrator (else it won't be able to create symlinks),
+move to a folder that's "above" your `Account` folder, and run the script.
+
+### Warnings
+
+Also note that there will be issues if you run two accounts at once. The data
+will be saved whenever you log out, overwriting everything from before.
+Now imagine Alice and Bob each have 5 arcane essences. You log in both toons,
+both will know about those 5 essences. Now Alice trades 3 essences to Bob and
+logs out. At that time, the database will know that Alices essences are down to
+3, but Bob doesn't reload that info. So Bob's Altoholic will know Bob has 8,
+but think Alice has 5.
+
+When you log out Bob, this info will be written to the common database, so you'll
+see Alice-5 Bob-8 until you log in Alice again.
+
+Also, if you log out a character in Account Alice, and the logout writes the 
+database, and during that write you log in on Account Bob, the Bob account will
+read an incomplete database and give you a warning. When Alice's log out is
+complete, you'll have a working database on the disk, but the in-memory one of
+Bob is botched. In this case, do *not* log out Bob; log Alice back in to read the
+sane database, then log Bob out (will write the botched one), then log Alice out
+(will overwrite the botched one with Alice's good one).
 
 
 
