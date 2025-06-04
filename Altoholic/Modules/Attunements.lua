@@ -24,6 +24,7 @@ local attunements = {
 	{	id = "6502",  name = "Onyxia's Lair", item = "Drakefire Amulet"  },
 	{	id = "7761",  name = "Blackwing Lair", item = "" },
 	{   id = "40962", name = "Emerald Sanctum", item = "Gemstone of Ysera" },
+	{   id = "9378",  name = "Naxxramas", item = "" },
 	{   id = "40829", name = "Upper Karazan", item = "Upper Karazen Tower Key" },
 
 	{   id = "0",     name = "Boss organ turn ins", collapsed = false },

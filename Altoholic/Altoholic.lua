@@ -842,7 +842,9 @@ function Altoholic:UpdateRaidTimers()
 	RequestRaidInfo()
 end
 
+local QuestQueryTime = 0
 function Altoholic:UpdateQuests()
+	QuestQueryTime = GetTime()
 	SendChatMessage(".queststatus", "GUILD")
 end
 
@@ -871,17 +873,13 @@ local function debugQuestsComplete(completedQuests)
 	end
 end
 
-function Altoholic:QUEST_QUERY_COMPLETE() 
-	local completedQuests = GetQuestsCompleted()
-	debugQuestsComplete(completedQuests)
-end
-
 function Altoholic:CHAT_MSG_ADDON(a1, a2)
 	-- If we have many quests completed we'll get more than one chat line.
 	-- So only ever add to the quest list; can't uncomplete a Q anyway.
 	if a1 and a1 == "TWQUEST" then
+		if GetTime() > QuestQueryTime + 3 then return end
 		-- DEFAULT_CHAT_FRAME:AddMessage(a1)
-		-- DEFAULT_CHAT_FRAME:AddMessage(ORANGE .. a2)
+		-- DEFAULT_CHAT_FRAME:AddMessage(ORANGE .. string.sub(a2, 1, 20) .. "..." .. string.sub(a2, -20))
 		local c = self.db.account.data[V.faction][V.realm].char[V.player]
 		local completedQuests = c.CompletedQuests or {}
 		for qid in string.gmatch(a2, "[^ ]+") do
