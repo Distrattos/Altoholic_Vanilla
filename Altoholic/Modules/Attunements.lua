@@ -67,7 +67,7 @@ function Altoholic:Attunements_Update()
 		if itemButton == nil then break end
 		itemButton:SetScript("OnEnter", Altoholic_Attunements_OnEnter)
 		itemButton:SetScript("OnLeave", function(self) AltoTooltip:Hide() end)
-		itemButton:SetScript("OnClick", Altoholic_Equipment_OnClick)
+		itemButton:SetScript("OnClick", Altoholic_Attunements_OnClick)
 		local tc = self.ClassInfo[ self.Classes[c.class] ].texcoord
 		local itemTexture = getglobal(itemName .. "IconTexture")
 		itemTexture:SetTexture(self.classicon);
@@ -144,9 +144,20 @@ function Altoholic:Attunements_Update()
 							getglobal(itemName .. "Name"):SetText("ok")
 							itemButton.CharName = CharacterName
 							itemButton:Show()
+							if not IS_TURTLE_WOW then
+								itemButton.Completed = true
+							end
 						else
-							itemButton.CharName = nil
-							itemButton:Hide()
+							-- If we can't flag quests like with Turtle WoW, keep button shown so we can toggle manually
+							if not IS_TURTLE_WOW then
+								getglobal(itemName .. "Name"):SetText("-")
+								itemButton.CharName = CharacterName
+								itemButton.Completed = false
+								itemButton:Show()
+							else
+								itemButton.CharName = nil
+								itemButton:Hide()
+							end
 						end
 						j = j + 1
 					end
@@ -175,7 +186,7 @@ function Altoholic:Attunements_Toggle(id)
 end
 
 function Altoholic_Attunements_OnEnter()
-    if not this then return end
+	if not this then return end
 	local rowID = this:GetParent():GetID()
 	if rowID == 0 then		-- class icon
 		V.CurrentFaction = V.faction
@@ -192,14 +203,57 @@ function Altoholic_Attunements_OnEnter()
 	AltoTooltip:SetOwner(this, "ANCHOR_LEFT");
 	AltoTooltip:ClearLines();
 	AltoTooltip:AddLine(Altoholic:GetClassColor(c.class) .. charName .. WHITE .. " @ " .. V.realm, 1, 1, 1);
-	AltoTooltip:AddLine("completed this quest (id "..attune.id .. ")",1,1,1);
-	if (attune.item and attune.item ~= "") then
-		AltoTooltip:AddLine(TEAL .. attune.item, 1, 1, 1);
+
+	if not IS_TURTLE_WOW and not this.Completed then
+		AltoTooltip:AddLine("has not completed quest (id "..attune.id .. ")",1,1,1);
 	else
-		AltoTooltip:AddLine("No item needed", 1, 1, 1);
+		AltoTooltip:AddLine("completed this quest (id "..attune.id .. ")",1,1,1);
+		if (attune.item and attune.item ~= "") then
+			AltoTooltip:AddLine(TEAL .. attune.item, 1, 1, 1);
+		else
+			AltoTooltip:AddLine("No item needed", 1, 1, 1);
+		end
 	end
+
 	AltoTooltip:Show();
-end
+	end
 
 function Altoholic_Attunements_OnClick()
+	if IS_TURTLE_WOW then return end
+
+	if not this then return end
+	local rowID = this:GetParent():GetID()
+	if rowID == 0 then		-- class icon
+		--V.CurrentFaction = V.faction
+		--V.CurrentRealm = V.realm
+		--Altoholic:DrawCharacterTooltip(this.CharName)
+		if this.Index <= 5 then
+			if characterOffset > 0 then characterOffset = characterOffset - 1 end
+		else
+			local byLevel = Altoholic:Get_Sorted_Character_List(V.faction, V.realm)
+			local count = 0
+			for _, CharacterName in pairs(byLevel) do
+				count = count + 1
+			end
+
+			if characterOffset < (count - 1) then characterOffset = characterOffset + 1 end
+		end
+		Altoholic:Attunements_Update()
+		return
+	end
+	local r = Altoholic.db.account.data[V.faction][V.realm]
+	-- DEFAULT_CHAT_FRAME:AddMessage("rowID is "..rowID)
+	local attune = attunements[rowID]
+	local charName = this.CharName
+	local c = Altoholic.db.account.data[V.faction][V.realm].char[charName]
+
+	if not c.CompletedQuests then c.CompletedQuests = {} end
+
+	if c.CompletedQuests[attune.id] then
+		c.CompletedQuests[attune.id] = false
+	else
+		c.CompletedQuests[attune.id] = true
+	end
+
+	Altoholic:Attunements_Update()
 end
