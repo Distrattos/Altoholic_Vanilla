@@ -14,29 +14,31 @@ local IS_TURTLE_WOW = TargetHPText or TargetHPPercText
 
 local attunements = {
 	{	id = "0",     name = "Dungeons", collapsed = false },
-	{   id = "7046",  name = "Maraudon Princess", item = "The Scepter of Celebras"   },
-	{   id = "5505", name = "Scholomance", item = "The Key to Scholomance" },
-	{   id = "40316", name = "Karazan Crypt (A)", item = "Karazan Crypt Key" },
-	{   id = "40309", name = "Karazan Crypt (H)", item = "Karazan Crypt Key" },
+	{   id = "7046",  name = "Maraudon Princess", item = "Scepter of Celebras", questName = "The Scepter of Celebras"  },
+	{   id = "5505", name = "Scholomance (A)", item = "Skeleton Key", questName = "The Key to Scholomance" },
+	{   id = "5511", name = "Scholomance (H)", item = "Skeleton Key", questName = "The Key to Scholomance" },
+	{   id = "40316", name = "Karazhan Crypt (A)", item = "Karazhan Crypt Key" },
+	{   id = "40309", name = "Karazhan Crypt (H)", item = "Karazhan Crypt Key" },
 
 	{   id = "0",     name = "Raids" , collapsed = false },
-	{   id = "4743",  name = "Upper BRS", item = "Seal of Ascension" },
-	{	id = "7848",  name = "Molten Core", item = ""  },
-	{	id = "6502",  name = "Onyxia's Lair", item = "Drakefire Amulet"  },
-	{	id = "7761",  name = "Blackwing Lair", item = "" },
-	{   id = "40962", name = "Emerald Sanctum", item = "Gemstone of Ysera" },
-	{   id = "9378",  name = "Naxxramas", item = "" },
-	{   id = "40829", name = "Upper Karazan", item = "Upper Karazen Tower Key" },
+	{   id = "4743",  name = "Upper BRS", item = "Seal of Ascension", questName = "Seal of Ascension" },
+	{	id = "7848",  name = "Molten Core", item = "", questName = "Attunement to the Core"  },
+	{	id = "6502",  name = "Onyxia's Lair (A)", item = "Drakefire Amulet", questName = "Drakefire Amulet"  },
+	{	id = "6602",  name = "Onyxia's Lair (H)", item = "Drakefire Amulet", questName = "Blood of the Black Dragon Champion"  },
+	{	id = "7761",  name = "Blackwing Lair", item = "", questName = "Blackhand's Command" },
+	{   id = "40962", name = "Emerald Sanctum", item = "Gemstone of Ysera", questName = "Into the Dream VI" },
+	{   id = "9378",  name = "Naxxramas", item = "", questName = "The Dread Citadel - Naxxramas" },
+	{   id = "40829", name = "Upper Karazan", item = "Upper Karazen Tower Key", questName = "The Key to Karazhan X" },
 
 	{   id = "0",     name = "Boss organ turn ins", collapsed = false },
-	{	id = "7496",  name = "Onyxia's Head (A)",  item = "" },
-	{	id = "7491",  name = "Onyxia's Head (H)",  item = "" },
-	{	id = "8183",  name = "The Heart of Hakkar", item = "" },
-	{   id = "8791",  name = "The Head of Ossirian", item = "" },
-	{	id = "7781",  name = "Head of Nefarian (A)",  item = "" },
-	{	id = "7783",  name = "Head of Nefarian (H)",  item = "" },
-	{	id = "40963",  name = "Head of Solnius",  item = "" },
-	{	id = "41038",  name = "The Claw of Erennius",  item = "" },
+	{	id = "7496",  name = "Onyxia's Head (A)",  item = "", questName = "Celebrating Good Times" },
+	{	id = "7491",  name = "Onyxia's Head (H)",  item = "", questName = "For All To See" },
+	{	id = "8183",  name = "The Heart of Hakkar", item = "" , questName = "The Heart of Hakkar"},
+	{   id = "8791",  name = "The Head of Ossirian", item = "", questName = "The Fall of Ossirian" },
+	{	id = "7781",  name = "Head of Nefarian (A)",  item = "", questName = "The Lord of Blackrock" },
+	{	id = "7783",  name = "Head of Nefarian (H)",  item = "", questName = "The Lord of Blackrock" },
+	{	id = "40963",  name = "Head of Solnius",  item = "", questName = "Head of Solnius" },
+	{	id = "41038",  name = "The Claw of Erennius",  item = "", questName = "The Claw of Erennius" },
 }
 
 -- Turtle Wow list for filtering
@@ -205,7 +207,7 @@ function Altoholic_Attunements_OnEnter()
 	AltoTooltip:AddLine(Altoholic:GetClassColor(c.class) .. charName .. WHITE .. " @ " .. V.realm, 1, 1, 1);
 
 	if not IS_TURTLE_WOW and not this.Completed then
-		AltoTooltip:AddLine("has not completed quest (id "..attune.id .. ")",1,1,1);
+		AltoTooltip:AddLine("has not completed quest \""..attune.questName.."\" (id "..attune.id .. ")",1,1,1);
 	else
 		AltoTooltip:AddLine("completed this quest (id "..attune.id .. ")",1,1,1);
 		if (attune.item and attune.item ~= "") then
