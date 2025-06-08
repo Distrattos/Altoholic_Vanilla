@@ -10,35 +10,57 @@ local RED		= "|cFFFF0000"
 local ORANGE	= "|cFFFF7F00"
 local YELLOW	= "|cFFFFFF00"
 local GREEN		= "|cFF00FF00"
+local IS_TURTLE_WOW = TargetHPText or TargetHPPercText
 
 -- sorted
 local RaidNames = {
-	"K10",
 	"ZG",
 	"AQ20",
 	"MC",
 	"Ony",
 	"BWL",
-	"ES",
 	"AQ40",
 	"Naxx",
-	"K40",
 }
 
 -- map to raid info name
-local RaidLongNames = { 
-	["K10"]	 = "Lower",
+local RaidLongNames = {
 	["ZG"]	 = "Zul'Gurub",
 	["AQ20"] = "Ruins",
 	["MC"]   = "Molten",
 	["Ony"]  = "Onyxia",
 	["BWL"]  = "Blackw",
-	["ES"]   = "Emerald",
 	["AQ40"] = "Ahn'Qir",
 	["Naxx"] = "Naxxram",
-	["K40"]  = "Upper",
 }
 
+if IS_TURTLE_WOW then
+	RaidNames = {
+		"K10",
+		"ZG",
+		"AQ20",
+		"MC",
+		"Ony",
+		"BWL",
+		"ES",
+		"AQ40",
+		"Naxx",
+		"K40",
+	}
+
+	RaidLongNames = {
+		["K10"]	 = "Lower",
+		["ZG"]	 = "Zul'Gurub",
+		["AQ20"] = "Ruins",
+		["MC"]   = "Molten",
+		["Ony"]  = "Onyxia",
+		["BWL"]  = "Blackw",
+		["ES"]   = "Emerald",
+		["AQ40"] = "Ahn'Qir",
+		["Naxx"] = "Naxxram",
+		["K40"]  = "Upper",
+	}
+end
 
 local TotalLockouts = {}
 

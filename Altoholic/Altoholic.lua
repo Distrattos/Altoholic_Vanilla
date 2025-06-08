@@ -30,6 +30,7 @@ local INFO_REALM_LINE = 1
 local INFO_CHARACTER_LINE = 2
 local INFO_TOTAL_LINE = 3
 local LEVEL_CAP = 60
+local IS_TURTLE_WOW = TargetHPText or TargetHPPercText
 
 Altoholic.Menu = {
 	{	name = L["Account Summary"], isCollapsed = false,
@@ -583,7 +584,9 @@ function Altoholic:UpdatePlayerStats()
 	self:UpdatePlayerInventory()
 	self:UpdateEquipment()
 	self:UpdateRaidTimers()
-	self:UpdateQuests()
+	if IS_TURTLE_WOW then --Only check quests in Turtle WoW due to custom server command
+		self:UpdateQuests()
+	end
 	self:PLAYER_MONEY()
 	-- *** Factions ***
 	for i = GetNumFactions(), 1, -1 do

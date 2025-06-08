@@ -9,6 +9,7 @@ local GREEN		= "|cFF00FF00"
 local TEAL		= "|cFF00FF9A"
 local YELLOW	= "|cFFFFFF00"
 local ORANGE	= "|cFFFF7F00"
+local IS_TURTLE_WOW = TargetHPText or TargetHPPercText
 
 
 local attunements = {
@@ -36,8 +37,16 @@ local attunements = {
 	{	id = "7783",  name = "Head of Nefarian (H)",  item = "" },
 	{	id = "40963",  name = "Head of Solnius",  item = "" },
 	{	id = "41038",  name = "The Claw of Erennius",  item = "" },
+}
 
-
+-- Turtle Wow list for filtering
+local tw_attunements = {
+	["40316"] = true, -- Karazan Crypt (A)
+	["40309"] = true, -- Karazan Crypt (H)
+	["40962"] = true, -- Emerald Sanctum
+	["40829"] = true, -- Upper Karazan
+	["40963"] = true, -- Head of Solnius
+	["41038"] = true, -- The Claw of Erennius
 }
 
 function Altoholic:Attunements_Update()
@@ -88,62 +97,66 @@ function Altoholic:Attunements_Update()
 		if line["id"] == "0" then
 			DrawAttuneGroup = not line.collapsed
 		end
-		-- DEFAULT_CHAT_FRAME:AddMessage("Processing "..ORANGE..line.id .. " " .. YELLOW .. line.name .. WHITE.." draw="..(DrawAttuneGroup and "yes" or "no"))
-		if offset > 0 or DisplayedCount >= VisibleLines then
-			-- hidden line; just update counters. Lines that are no headers don't
-			-- count if the header is collapsed.
-			if line["id"] == "0" or DrawAttuneGroup then
-				VisibleCount = VisibleCount + 1
-				offset = offset - 1
-			end
-		else
-			if line.id == "0" then
-				if line.collapsed then
-					getglobal(entry..i.."Collapse"):SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-				else
-					getglobal(entry..i.."Collapse"):SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+
+		-- If not playing on turtle wow, skip entries listed in tw_attunements
+		if IS_TURTLE_WOW or not tw_attunements[line["id"]] then
+			-- DEFAULT_CHAT_FRAME:AddMessage("Processing "..ORANGE..line.id .. " " .. YELLOW .. line.name .. WHITE.." draw="..(DrawAttuneGroup and "yes" or "no"))
+			if offset > 0 or DisplayedCount >= VisibleLines then
+				-- hidden line; just update counters. Lines that are no headers don't
+				-- count if the header is collapsed.
+				if line["id"] == "0" or DrawAttuneGroup then
+					VisibleCount = VisibleCount + 1
+					offset = offset - 1
 				end
-				getglobal(entry..i.."Collapse"):Show()
-				getglobal(entry..i.."Name"):SetText(line.name)
-				getglobal(entry..i.."Name"):SetJustifyH("LEFT")
-				getglobal(entry..i.."Name"):SetPoint("TOPLEFT", 25, 0)
-				getglobal(entry..i):SetID(lineno)
-				getglobal(entry..i):Show()
-				for j=1, 10 do		-- hide the 10 characters
-					itemButton = getglobal(entry.. i .. "Item" .. j);
-					itemButton.CharName = nil
-					itemButton:Hide()
-				end
-				i = i + 1
-				VisibleCount = VisibleCount + 1
-				DisplayedCount = DisplayedCount + 1
-			elseif DrawAttuneGroup then
-				getglobal(entry..i.."Collapse"):Hide()
-				getglobal(entry..i.."Name"):SetText(WHITE .. line.name)
-				getglobal(entry..i.."Name"):SetJustifyH("RIGHT")
-				getglobal(entry..i.."Name"):SetPoint("TOPLEFT", 15, 0)
-				local j = 1
-				for _, CharacterName in byLevel do
-					c = self.db.account.data[V.faction][V.realm].char[CharacterName]
-					local itemName = entry.. i .. "Item" .. j;
-					local itemButton = getglobal(itemName);
-                    if itemButton == nil then break end
-					if c.CompletedQuests and c.CompletedQuests[line.id] then
-						getglobal(itemName .. "Name"):SetText("ok")
-						itemButton.CharName = CharacterName
-						itemButton:Show()
+			else
+				if line.id == "0" then
+					if line.collapsed then
+						getglobal(entry..i.."Collapse"):SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
 					else
+						getglobal(entry..i.."Collapse"):SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+					end
+					getglobal(entry..i.."Collapse"):Show()
+					getglobal(entry..i.."Name"):SetText(line.name)
+					getglobal(entry..i.."Name"):SetJustifyH("LEFT")
+					getglobal(entry..i.."Name"):SetPoint("TOPLEFT", 25, 0)
+					getglobal(entry..i):SetID(lineno)
+					getglobal(entry..i):Show()
+					for j=1, 10 do		-- hide the 10 characters
+						itemButton = getglobal(entry.. i .. "Item" .. j);
 						itemButton.CharName = nil
 						itemButton:Hide()
 					end
-					j = j + 1
+					i = i + 1
+					VisibleCount = VisibleCount + 1
+					DisplayedCount = DisplayedCount + 1
+				elseif DrawAttuneGroup then
+					getglobal(entry..i.."Collapse"):Hide()
+					getglobal(entry..i.."Name"):SetText(WHITE .. line.name)
+					getglobal(entry..i.."Name"):SetJustifyH("RIGHT")
+					getglobal(entry..i.."Name"):SetPoint("TOPLEFT", 15, 0)
+					local j = 1
+					for _, CharacterName in byLevel do
+						c = self.db.account.data[V.faction][V.realm].char[CharacterName]
+						local itemName = entry.. i .. "Item" .. j;
+						local itemButton = getglobal(itemName);
+						if itemButton == nil then break end
+						if c.CompletedQuests and c.CompletedQuests[line.id] then
+							getglobal(itemName .. "Name"):SetText("ok")
+							itemButton.CharName = CharacterName
+							itemButton:Show()
+						else
+							itemButton.CharName = nil
+							itemButton:Hide()
+						end
+						j = j + 1
+					end
+					-- DEFAULT_CHAT_FRAME:AddMessage("Line "..i.." has attunement line "..lineno)
+					getglobal(entry..i):SetID(lineno)
+					getglobal(entry..i):Show()
+					i = i + 1
+					VisibleCount = VisibleCount + 1
+					DisplayedCount = DisplayedCount + 1
 				end
-				-- DEFAULT_CHAT_FRAME:AddMessage("Line "..i.." has attunement line "..lineno)
-				getglobal(entry..i):SetID(lineno)
-				getglobal(entry..i):Show()
-				i = i + 1
-				VisibleCount = VisibleCount + 1
-				DisplayedCount = DisplayedCount + 1
 			end
 		end
 	end
