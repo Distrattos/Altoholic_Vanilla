@@ -51,6 +51,8 @@ local tw_attunements = {
 	["41038"] = true, -- The Claw of Erennius
 }
 
+local characterOffset = 0
+
 function Altoholic:Attunements_Update()
 
 	local VisibleLines = 11
@@ -59,8 +61,8 @@ function Altoholic:Attunements_Update()
 	-- ** draw class icons **
 	local i = 1
 
-	local byLevel = Altoholic:Get_Sorted_Character_List(V.faction, V.realm)
-	for _, CharacterName in byLevel do
+	local byLevel = Altoholic:Get_Sorted_Character_List(V.faction, V.realm, characterOffset)
+	for index, CharacterName in byLevel do
 		-- DEFAULT_CHAT_FRAME:AddMessage("Handling "..CharacterName)
 		local c = self.db.account.data[V.faction][V.realm].char[CharacterName]
 		local itemName = "AltoAttunementsClassesItem" .. i;
@@ -78,6 +80,7 @@ function Altoholic:Attunements_Update()
 		itemTexture:SetHeight(36);
 		itemTexture:SetAllPoints(itemButton);
 		itemButton.CharName = CharacterName
+		itemButton.Index = index
 		getglobal(itemName):Show()
 		i = i + 1
 	end
@@ -238,7 +241,10 @@ function Altoholic_Attunements_OnClick()
 				count = count + 1
 			end
 
-			if characterOffset < (count - 1) then characterOffset = characterOffset + 1 end
+			-- If we have less than 10 characters, which is the max amount of entries, we do nothing
+			if count > 10 then
+				if characterOffset < (count - 10) then characterOffset = characterOffset + 1 end
+			end
 		end
 		Altoholic:Attunements_Update()
 		return

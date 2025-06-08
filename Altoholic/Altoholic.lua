@@ -2005,6 +2005,7 @@ function Altoholic:ProcessTooltip(tooltip, ttype, link, bagID, slotID)
 end
 
 Altoholic_sorted_character_list = nil
+Altoholic_filtered_character_list = nil
 Altoholic_compare_faction = nil
 Altoholic_compare_realm = nil
 
@@ -2018,16 +2019,30 @@ local function compare_Character_By_Level(c1, c2)
 	end
 end
 
-function Altoholic:Get_Sorted_Character_List(faction, realm)
+function Altoholic:Get_Sorted_Character_List(faction, realm, skipCount)
 	Altoholic_sorted_character_list = {}
+	Altoholic_filtered_character_list = {}
 	Altoholic_compare_faction = faction
 	Altoholic_compare_realm = realm
+	skipCount = skipCount or 0
+
 	-- DEFAULT_CHAT_FRAME:AddMessage(TEAL .. "getting list for "..faction.." on "..realm)
 	for CharacterName, c in pairs(self.db.account.data[faction][realm].char) do
 		table.insert(Altoholic_sorted_character_list, CharacterName)
 	end
 	table.sort(Altoholic_sorted_character_list, compare_Character_By_Level)
-	return Altoholic_sorted_character_list
+
+	local skipped = 0
+	for _, CharacterName in pairs(Altoholic_sorted_character_list) do
+		if skipped < skipCount then
+			skipped = skipped + 1
+			-- DEFAULT_CHAT_FRAME:AddMessage("Skipping "..CharacterName)
+		else
+			table.insert(Altoholic_filtered_character_list, CharacterName)
+		end
+	end
+
+	return Altoholic_filtered_character_list
 end
 
 -- *** EVENT HANDLERS ***
